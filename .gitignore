@@ -1,0 +1,93 @@
+############################
+# Maven
+############################
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/
+mvnw
+mvnw.cmd
+
+############################
+# IntelliJ IDEA
+############################
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+############################
+# Eclipse (if ever used)
+############################
+.project
+.classpath
+.settings/
+
+############################
+# VS Code
+############################
+.vscode/
+
+############################
+# Logs
+############################
+logs/
+*.log
+*/logs/
+
+############################
+# OS Files
+############################
+.DS_Store
+Thumbs.db
+
+############################
+# Build Artifacts
+############################
+bin/
+build/
+
+############################
+# Java
+############################
+*.class
+
+############################
+# Sensitive Spring Configs
+############################
+# DO NOT COMMIT real application.yml or properties anywhere
+**/application.yml
+**/application.properties
+**/application-*.yml
+**/application-*.properties
+
+# Allow example files only
+!*example.yml
+!*example.properties
+
+############################
+# Environment Variables Files
+############################
+*.env
+*.env.*
+.env
+.env.local
+
+############################
+# Node (if you add UI or gateway UI later)
+############################
+node_modules/
+
+############################
+# Temp & Misc files
+############################
+*.swp
+*.swo
+*.tmp
+*.bak
+
+############################
+# PostgreSQL dump files
+############################
+*.sql
+*.dump
