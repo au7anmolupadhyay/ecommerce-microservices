@@ -56,7 +56,7 @@ build/
 # Sensitive Spring Configs
 ############################
 # DO NOT COMMIT real application.yml or properties anywhere
-**/application.yml
+**/application.yaml
 **/application.properties
 **/application-*.yml
 **/application-*.properties
