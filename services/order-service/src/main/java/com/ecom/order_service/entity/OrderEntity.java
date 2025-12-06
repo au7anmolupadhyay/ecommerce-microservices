@@ -1,18 +1,18 @@
 package com.ecom.order_service.entity;
 
+import com.ecom.order_service.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Date;
 
 @Entity
 @Data
-@Table(name = "order")
+@Table(name = "orders")
 @NoArgsConstructor
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class OrderEntity {
 
     @Id
@@ -21,7 +21,8 @@ public class OrderEntity {
     private Long userId;
     private double price;
     private Long productId;
-    private String orderStatus;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
     private Integer quantity;
     private Date createdAt;
 }
