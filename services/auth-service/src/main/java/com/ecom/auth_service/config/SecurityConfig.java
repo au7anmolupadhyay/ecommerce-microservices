@@ -27,7 +27,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/auth/register",
                                 "/auth/login",
-                                "/auth/validate"
+                                "/auth/validate",
+                                "/health"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

@@ -13,8 +13,6 @@ import lombok.NoArgsConstructor;
 public class InventoryEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private Long productId;
     private Integer quantity;
 }

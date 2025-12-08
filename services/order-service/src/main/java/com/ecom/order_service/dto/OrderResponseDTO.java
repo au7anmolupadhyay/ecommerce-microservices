@@ -7,6 +7,7 @@ public class OrderResponseDTO {
     private Long userId;
     private Long productId;
     private Long orderId;
+    private double price;
     private String orderStatus;
     private Integer quantity;
 }

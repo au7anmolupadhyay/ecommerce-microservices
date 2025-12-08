@@ -18,7 +18,7 @@ public class InventoryService {
 
     public StockResponseDTO addProductQuantity(StockUpdateRequestDTO product){
         InventoryEntity stock = inventoryRepository.findByProductId(product.getProductId())
-                .orElse(new InventoryEntity(null, product.getProductId(), 0));
+                .orElse(new InventoryEntity(product.getProductId(), 0));
 
         stock.setQuantity(stock.getQuantity() + product.getQuantity());
         stock = inventoryRepository.save(stock);
@@ -26,7 +26,7 @@ public class InventoryService {
         return inventoryMapper.toDto(stock);
     }
 
-    public StockResponseDTO reduceProductQuantity(StockUpdateRequestDTO product){
+    public Boolean reduceProductQuantity(StockUpdateRequestDTO product){
         InventoryEntity stock = inventoryRepository.findByProductId(product.getProductId())
                 .orElseThrow(()->new RuntimeException("Product not found!"));
 
@@ -34,15 +34,18 @@ public class InventoryService {
             throw new RuntimeException ("Insufficient Stock");
         }
 
-        stock.setQuantity(stock.getQuantity() - product.getQuantity());
-        stock = inventoryRepository.save(stock);
-
-        return inventoryMapper.toDto(stock);
+        try{
+            stock.setQuantity(stock.getQuantity() - product.getQuantity());
+            inventoryRepository.save(stock);
+            return true;
+        }catch (Exception e){
+            throw new RuntimeException("Stock not updated");
+        }
     }
 
     public StockCheckResponseDTO checkStockQuantity(Long productId){
         InventoryEntity stock = inventoryRepository.findByProductId(productId)
-                .orElse(new InventoryEntity(null, productId, 0));
+                .orElse(new InventoryEntity(productId, 0));
 
         StockCheckResponseDTO response = new StockCheckResponseDTO();
         response.setProductId(productId);

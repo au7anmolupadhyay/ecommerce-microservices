@@ -27,17 +27,19 @@ public class SecurityConfig {
                         sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Order endpoints
-                        .requestMatchers(HttpMethod.POST, "/orders/place").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/orders/{orderId}").authenticated()
+                        // 1. Only USER can place orders
+                        .requestMatchers(HttpMethod.POST, "/orders/place").hasRole("USER")
+                        // 2. Get order details by ID → authenticated
+                        .requestMatchers(HttpMethod.GET, "/orders/**").authenticated()
+                        // 3. All orders of a user → authenticated
                         .requestMatchers(HttpMethod.GET, "/orders/user/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/orders/cancel/**").authenticated()
-
-                        // everything else
+                        // 4. Cancel order → authenticated
+                        .requestMatchers(HttpMethod.POST, "/orders/cancel/**").hasAnyRole("USER","ADMIN")
+                        // Everything else
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

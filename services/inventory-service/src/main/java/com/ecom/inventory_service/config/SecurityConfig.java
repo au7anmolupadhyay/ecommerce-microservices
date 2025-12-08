@@ -27,8 +27,8 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/inventory/check/**").permitAll()
-                        .requestMatchers("/inventory/add", "/inventory/reduce").hasRole("ADMIN")
-
+                        .requestMatchers("/inventory/add").hasRole("ADMIN")
+                        .requestMatchers("/inventory/reduce").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

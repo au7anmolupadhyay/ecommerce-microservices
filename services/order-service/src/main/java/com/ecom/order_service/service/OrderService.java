@@ -24,28 +24,28 @@ public class OrderService {
     private final InventoryClient inventoryClient;
 
     public OrderResponseDTO placeOrder(OrderRequestDTO order){
-
+        System.out.println("inside orderService placeorder" + order);
         StockCheckResponseDTO stock = inventoryClient.checkStock(order.getProductId());
 
         if(stock.getQuantity() < order.getQuantity())
             throw new RuntimeException("Out of Stock");
 
-        boolean reduced = inventoryClient.
+        Boolean reduced = inventoryClient.
                 reduceStock(new StockUpdateRequestDTO(order.getProductId(), order.getQuantity()));
 
         if(!reduced) throw new RuntimeException("Failed to reduce the stock");
 
+        System.out.println("inside 2 orderService place order" + order);
         OrderEntity newOrder = new OrderEntity();
         newOrder.setUserId(order.getUserId());
         newOrder.setProductId(order.getProductId());
         newOrder.setQuantity(order.getQuantity());
         newOrder.setPrice(0.0);
-        newOrder.setOrderStatus(OrderStatus.CANCELLED);
+        newOrder.setOrderStatus(OrderStatus.PLACED);
         newOrder.setCreatedAt(new Date());
 
-        orderRepository.save(newOrder);
-
-        return orderMapper.toDto(newOrder);
+        OrderEntity orderCreated = orderRepository.save(newOrder);
+        return orderMapper.toDto(orderCreated);
     }
 
     public OrderResponseDTO getOrderDetails(Long orderId){

@@ -23,6 +23,11 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
+    @GetMapping("/health")
+    public String healthCheck(){
+        return "Health - okay";
+    }
+
     @PostMapping("/register")
     public String register(@RequestBody RegisterRequestDTO user){
         return authService.register(user);

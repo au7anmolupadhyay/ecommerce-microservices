@@ -23,7 +23,8 @@ public class InventoryController {
     }
 
     @PostMapping("/reduce")
-    public ResponseEntity<StockResponseDTO> reduceStock(@RequestBody StockUpdateRequestDTO product){
+    public ResponseEntity<Boolean> reduceStock(@RequestBody StockUpdateRequestDTO product){
+        System.out.println("In inventory controller " + product);
         return ResponseEntity.ok(inventoryService.reduceProductQuantity(product));
     }
 
