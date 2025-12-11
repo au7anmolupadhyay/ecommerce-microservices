@@ -1,26 +1,50 @@
 package com.ecom.user_service.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.Instant;
 
 @Entity
 @Data
-@Table(name = "address")
-@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "addresses")
 public class UserAddressEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
-    private String user_id;
+    private Long id;
+
+    // JPA relationship
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserProfileEntity user;
+
+    private String line1;
+    private String line2;
     private String city;
     private String state;
     private String pincode;
     private String country;
-    private boolean is_default;
-    private Date created_at;
-    private Date updated_at;
+
+    @Column(name = "is_default")
+    private boolean isDefault;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @Column(name = "updated_at")
+    private Instant updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = Instant.now();
+        this.updatedAt = this.createdAt;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = Instant.now();
+    }
 }
