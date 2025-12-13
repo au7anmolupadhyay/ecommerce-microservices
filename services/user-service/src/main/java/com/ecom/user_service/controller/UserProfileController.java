@@ -1,5 +1,6 @@
 package com.ecom.user_service.controller;
 
+import com.ecom.user_service.entity.UserPreferencesEntity;
 import com.ecom.user_service.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,11 +32,26 @@ public class UserProfileController {
     @PostMapping("/addresses")
     public ResponseEntity<?> addAddresses(@RequestHeader("X-USER-ID") String userId,
                                           @RequestBody UserAddressRequestDto addresses){
-        return ResponseEntity.created(userProfileService.addAddresses(userId, addresses));
+        return ResponseEntity.status(201)
+                .body(userProfileService.addAddress(userId, addresses));
     }
 
-    @DeleteMapping("/addresses")
-    public ResponseEntity<?> deleteAddress(@RequestHeader("X-USER-ID") String userId){
-        return ResponseEntity.noContent(userProfileService.deleteAddress(userId));
+    @DeleteMapping("/addresses/{addressId}")
+    public ResponseEntity<?> deleteAddress(@RequestHeader("X-USER-ID") String userId,
+                                           @PathVariable Long addressId
+                                           ){
+        return ResponseEntity.noContent(userProfileService.deleteAddress(userId)).build();
+    }
+
+    @GetMapping("/preferences")
+    public ResponseEntity<?> getPreferences(@RequestHeader("X-USER-ID") String userId){
+        return ResponseEntity.ok(userProfileService.getPreferences(userId));
+    }
+
+    @PutMapping("/preferences")
+    public ResponseEntity<?> updatePreferences(@RequestHeader("X-USER-ID") String userId,
+                                               @RequestBody UserPreferencesRequestDto preferences
+                                               ){
+        return ResponseEntity.ok(userProfileService.updatePreferences(userId, preferences));
     }
 }

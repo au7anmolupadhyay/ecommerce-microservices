@@ -9,5 +9,4 @@ import lombok.Data;
 public class UserProfileRequestDto {
     private String name;
     private String phone;
-    private UserAddressEntity address;
 }
