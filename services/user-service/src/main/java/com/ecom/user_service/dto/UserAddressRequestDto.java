@@ -10,5 +10,5 @@ public class UserAddressRequestDto {
     private String state;
     private String pincode;
     private String country;
-    private String isDefault;
+    private boolean isDefault;
 }
