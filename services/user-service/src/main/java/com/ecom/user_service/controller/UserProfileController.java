@@ -1,5 +1,8 @@
 package com.ecom.user_service.controller;
 
+import com.ecom.user_service.dto.UserAddressRequestDto;
+import com.ecom.user_service.dto.UserPreferencesRequestDto;
+import com.ecom.user_service.dto.UserProfileRequestDto;
 import com.ecom.user_service.entity.UserPreferencesEntity;
 import com.ecom.user_service.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
