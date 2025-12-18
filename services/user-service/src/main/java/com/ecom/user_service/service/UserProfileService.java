@@ -1,9 +1,6 @@
 package com.ecom.user_service.service;
 
-import com.ecom.user_service.dto.UserAddressResponseDto;
-import com.ecom.user_service.dto.UserPreferencesResponseDto;
-import com.ecom.user_service.dto.UserProfileRequestDto;
-import com.ecom.user_service.dto.UserProfileResponseDto;
+import com.ecom.user_service.dto.*;
 import com.ecom.user_service.entity.UserAddressEntity;
 import com.ecom.user_service.entity.UserPreferencesEntity;
 import com.ecom.user_service.entity.UserProfileEntity;
@@ -35,13 +32,10 @@ public class UserProfileService {
         dto.setPincode(entity.getPincode());
         dto.setCountry(entity.getCountry());
         dto.setDefault(entity.isDefault());
-
         return dto;
     }
 
-
-
-    public UserProfileEntity getOrCreateUser(String userId) {
+    private UserProfileEntity getOrCreateUser(String userId) {
         return userProfileRepository.findByAuthUserId(userId)
                 .orElseGet(()->{
                     UserProfileEntity user = new UserProfileEntity();
@@ -81,7 +75,6 @@ public class UserProfileService {
         return response;
     }
 
-
     public UserProfileResponseDto updateUserProfile(String userId, UserProfileRequestDto profile){
 
         UserProfileEntity user = getOrCreateUser(userId);
@@ -90,8 +83,46 @@ public class UserProfileService {
         user.setPhone(profile.getPhone());
 
         userProfileRepository.save(user);
-
         return getProfile(userId);
 
+    }
+
+    public List<UserAddressResponseDto> getAllAddresses(String userId){
+        UserProfileEntity user = getOrCreateUser(userId);
+        List<UserAddressEntity> addresses = userAddressRepository.findByUser(user);
+
+        return addresses.stream()
+                .map(this::mapAddressToResponse)
+                .toList();
+    }
+
+    public UserAddressResponseDto addAddress(String userId, UserAddressRequestDto addressRequest){
+        UserProfileEntity user = getOrCreateUser(userId);
+
+        List<UserAddressEntity> existingAddresses = userAddressRepository.findByUser(user);
+
+        if(existingAddresses.isEmpty()){
+            addressRequest.setDefault(true);
+        }
+        else if(addressRequest.isDefault()){
+            for(UserAddressEntity address : existingAddresses){
+                if(address.isDefault()){
+                    address.setDefault(false);
+                    break;
+                }
+            }
+            userAddressRepository.saveAll(existingAddresses);
+        }
+
+        UserAddressEntity address = new UserAddressEntity();
+        address.setUser(user);
+        address.setLine1(addressRequest.getLine1());
+        address.setLine2(addressRequest.getLine2());
+        address.setCity(addressRequest.getCity());
+        address.setState(addressRequest.getState());
+        address.setPincode(addressRequest.getPincode());
+        addressRequest.setCountry(addressRequest.getCountry());
+
+        return mapAddressToResponse(address);
     }
 }

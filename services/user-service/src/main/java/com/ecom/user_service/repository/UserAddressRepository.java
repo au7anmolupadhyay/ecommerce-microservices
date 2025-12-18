@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserAddressRepository extends JpaRepository<UserAddressEntity, Long> {
-    List<UserAddressEntity> findByUser(UserProfileEntity user);
+    List<UserAddressEntity> findByUser(UserProfileEntity userId);
 
     Optional<UserAddressEntity> findByIdAndUser(Long id, UserProfileEntity user);
 }
