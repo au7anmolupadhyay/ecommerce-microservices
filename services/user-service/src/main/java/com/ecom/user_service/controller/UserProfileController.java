@@ -42,7 +42,7 @@ public class UserProfileController {
     public ResponseEntity<?> deleteAddress(@RequestHeader("X-USER-ID") String userId,
                                            @PathVariable Long addressId
                                            ){
-        return ResponseEntity.noContent(userProfileService.deleteAddress(userId)).build();
+        return ResponseEntity.ok(userProfileService.deleteAddress(userId, addressId));
     }
 
     @GetMapping("/preferences")

@@ -125,4 +125,74 @@ public class UserProfileService {
 
         return mapAddressToResponse(address);
     }
+
+    public Boolean deleteAddress(String userId, Long addressId) {
+
+        UserProfileEntity user = getOrCreateUser(userId);
+
+        UserAddressEntity address = userAddressRepository.findByIdAndUser(addressId, user)
+                .orElseThrow(()-> new RuntimeException("Address not found"));
+
+        boolean wasDefault = address.isDefault();
+
+        userAddressRepository.delete(address);
+
+        if(wasDefault){
+            List<UserAddressEntity> remainingAddresses = userAddressRepository.findByUser(user);
+
+            if(!remainingAddresses.isEmpty()){
+                UserAddressEntity newDefaultAddress = remainingAddresses.get(0);
+                newDefaultAddress.setDefault(true);
+                userAddressRepository.save(newDefaultAddress);
+            }
+        }
+
+        return true;
+    }
+
+    public UserPreferencesResponseDto getPreferences(String userId) {
+            UserProfileEntity user = getOrCreateUser(userId);
+
+            UserPreferencesEntity prefs = userPreferenceRepository.findByUser(user)
+                    .orElse(null);
+
+            UserPreferencesResponseDto responseDto = new UserPreferencesResponseDto();
+
+            if(prefs != null){
+                responseDto.setNotificationsEnabled(prefs.isNotificationsEnabled());
+                responseDto.setLanguage(prefs.getLanguage());
+            }
+            else{
+                responseDto.setNotificationsEnabled(true);
+                responseDto.setLanguage("en");
+            }
+
+            return responseDto;
+    }
+
+    public UserPreferencesResponseDto updatePreferences(String userId, UserPreferencesRequestDto request) {
+
+        UserProfileEntity user = getOrCreateUser(userId);
+
+        UserPreferencesEntity prefs =
+                userPreferenceRepository.findByUser(user)
+                        .orElseGet(() -> {
+                            UserPreferencesEntity newPrefs = new UserPreferencesEntity();
+                            newPrefs.setUser(user);
+                            return newPrefs;
+                        });
+
+        prefs.setNotificationsEnabled(request.isNotificationsEnabled());
+        prefs.setLanguage(request.getLanguage());
+
+        UserPreferencesEntity saved =
+                userPreferenceRepository.save(prefs);
+
+        UserPreferencesResponseDto response = new UserPreferencesResponseDto();
+        response.setNotificationsEnabled(saved.isNotificationsEnabled());
+        response.setLanguage(saved.getLanguage());
+
+        return response;
+    }
+
 }
