@@ -56,4 +56,15 @@ public class UserProfileController {
                                                ){
         return ResponseEntity.ok(userProfileService.updatePreferences(userId, preferences));
     }
+
+    @PutMapping("/addresses/{addressId}/default")
+    public ResponseEntity<?> setDefaultAddress(
+            @RequestHeader("X-USER-ID") String userId,
+            @PathVariable Long addressId) {
+
+        return ResponseEntity.ok(
+                userProfileService.setDefaultAddress(userId, addressId)
+        );
+    }
+
 }

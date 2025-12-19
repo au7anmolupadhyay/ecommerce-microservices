@@ -9,6 +9,7 @@ import com.ecom.user_service.repository.UserPreferenceRepository;
 import com.ecom.user_service.repository.UserProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -121,8 +122,9 @@ public class UserProfileService {
         address.setCity(addressRequest.getCity());
         address.setState(addressRequest.getState());
         address.setPincode(addressRequest.getPincode());
-        addressRequest.setCountry(addressRequest.getCountry());
+        address.setCountry(addressRequest.getCountry());
 
+        userAddressRepository.save(address);
         return mapAddressToResponse(address);
     }
 
@@ -193,6 +195,40 @@ public class UserProfileService {
         response.setLanguage(saved.getLanguage());
 
         return response;
+    }
+
+    @Transactional
+    public UserAddressResponseDto setDefaultAddress(String userId, Long addressId) {
+
+        UserProfileEntity user = getOrCreateUser(userId);
+
+        // 1. Validate ownership
+        UserAddressEntity target =
+                userAddressRepository.findByIdAndUser(addressId, user)
+                        .orElseThrow(() -> new RuntimeException("Address not found"));
+
+        // 2. If already default → no-op
+        if (target.isDefault()) {
+            return mapAddressToResponse(target);
+        }
+
+        // 3. Remove existing default
+        List<UserAddressEntity> addresses = userAddressRepository.findByUser(user);
+        for (UserAddressEntity addr : addresses) {
+            if (addr.isDefault()) {
+                addr.setDefault(false);
+                break;
+            }
+        }
+
+        // 4. Set new default
+        target.setDefault(true);
+
+        // 5. Persist changes
+        userAddressRepository.saveAll(addresses);
+        userAddressRepository.save(target);
+
+        return mapAddressToResponse(target);
     }
 
 }

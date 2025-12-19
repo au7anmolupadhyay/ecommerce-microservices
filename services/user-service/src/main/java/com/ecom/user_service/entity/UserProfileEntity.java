@@ -29,6 +29,8 @@ public class UserProfileEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAddressEntity> addresses = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserPreferencesEntity preferences;
 
 
     @Column(name = "created_at", nullable = false, updatable = false)
