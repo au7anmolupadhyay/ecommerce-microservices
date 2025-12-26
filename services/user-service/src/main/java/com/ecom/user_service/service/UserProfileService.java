@@ -123,6 +123,7 @@ public class UserProfileService {
         address.setState(addressRequest.getState());
         address.setPincode(addressRequest.getPincode());
         address.setCountry(addressRequest.getCountry());
+        address.setDefault(addressRequest.isDefault());
 
         userAddressRepository.save(address);
         return mapAddressToResponse(address);

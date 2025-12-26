@@ -20,7 +20,6 @@ public class UserAddressEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserProfileEntity user;
-
     private String line1;
     private String line2;
     private String city;

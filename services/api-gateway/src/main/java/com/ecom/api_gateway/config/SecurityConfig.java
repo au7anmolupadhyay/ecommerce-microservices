@@ -24,6 +24,7 @@ public class SecurityConfig {
                         .pathMatchers("/product/**").permitAll()
                         .pathMatchers("/orders/**").permitAll()
                         .pathMatchers("/inventory/**").permitAll()
+                        .pathMatchers("/user/**").permitAll()
                         .pathMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyExchange().authenticated()
                 );
