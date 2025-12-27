@@ -1,4 +1,4 @@
-package entity;
+package com.ecom.payment_service.entity;
 
 import com.ecom.payment_service.enums.PaymentMethod;
 import com.ecom.payment_service.enums.PaymentStatus;
@@ -47,6 +47,8 @@ public class PaymentEntity {
     private PaymentStatus status;
 
     private String gatewayTransactionId;
+
+    private String failureReason;
 
     @CreationTimestamp
     private Instant createdAt;
