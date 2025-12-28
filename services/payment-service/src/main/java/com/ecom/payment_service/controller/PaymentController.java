@@ -7,6 +7,7 @@ import com.ecom.payment_service.dto.UpdatePaymentStatusRequestDto;
 import com.ecom.payment_service.entity.PaymentEntity;
 import com.ecom.payment_service.enums.PaymentStatus;
 import com.ecom.payment_service.service.PaymentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
-    public ResponseEntity<PaymentResponseDto> createPayment(@RequestBody CreatePaymentRequestDto paymentRequest){
+    public ResponseEntity<PaymentResponseDto> createPayment(@Valid @RequestBody CreatePaymentRequestDto paymentRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(paymentService.createPayment(paymentRequest));
     }
 
