@@ -96,7 +96,6 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         paymentRepository.save(payment);
-
         return mapper.toResponse(payment);
     }
 
@@ -113,8 +112,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         if(userId == null && status != null){
-            PaymentStatus paymentStatus = PaymentStatus.valueOf(status);
-            List<PaymentEntity> allPaymentsByStatus = paymentRepository.findByStatus(paymentStatus);
+            List<PaymentEntity> allPaymentsByStatus = paymentRepository.findByStatus(status);
             return mapper.toSummaryList(allPaymentsByStatus);
         }
 
