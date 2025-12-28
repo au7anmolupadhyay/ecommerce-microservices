@@ -8,7 +8,6 @@ import java.time.Instant;
 
 @Data
 public class PaymentSummaryResponseDto {
-
     private String paymentId;
     private String orderId;
     private BigDecimal amount;
