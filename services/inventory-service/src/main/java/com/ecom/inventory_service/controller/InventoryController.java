@@ -4,10 +4,8 @@ import com.ecom.inventory_service.dto.StockCheckResponseDTO;
 import com.ecom.inventory_service.dto.StockResponseDTO;
 import com.ecom.inventory_service.dto.StockUpdateRequestDTO;
 import com.ecom.inventory_service.service.InventoryService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

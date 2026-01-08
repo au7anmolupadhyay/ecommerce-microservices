@@ -24,25 +24,27 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(
-                                SessionCreationPolicy.STATELESS
-                        )
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
 
-                        // 🔓 Internal / gateway callbacks
+                        // 🔓 Gateway / payment callback
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/payments/*/status"
                         ).permitAll()
 
-                        // 🔐 All payment APIs require JWT
-                        .requestMatchers("/payments/**")
-                        .authenticated()
+                        // ✅ CREATE payment → USER
+                        .requestMatchers(HttpMethod.POST, "/payments")
+                        .hasRole("USER")
 
-                        // Other endpoints
+                        // ✅ READ payments → USER / ADMIN
+                        .requestMatchers(HttpMethod.GET, "/payments/**")
+                        .hasAnyRole("USER", "ADMIN")
+
+                        // 🔐 everything else
                         .anyRequest()
-                        .permitAll()
+                        .authenticated()
                 )
                 .addFilterBefore(
                         jwtAuthenticationFilter,
@@ -51,4 +53,5 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 }
