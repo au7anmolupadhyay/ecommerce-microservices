@@ -35,4 +35,16 @@ public class ProductService {
                 orElseThrow(() -> new IllegalArgumentException("Product not found!"));
         return productMapper.toDTO(product);
     }
+
+    public List<ProductResponseDTO> getProducts(String category) {
+
+        if (category == null || category.isBlank()) {
+            return productMapper.toDTOList(productRepository.findAll());
+        }
+
+        return productMapper.toDTOList(
+                productRepository.findByCategoryIgnoreCase(category)
+        );
+    }
+
 }
