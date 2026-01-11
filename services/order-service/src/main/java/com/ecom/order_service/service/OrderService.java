@@ -7,6 +7,8 @@ import com.ecom.order_service.dto.StockCheckResponseDTO;
 import com.ecom.order_service.dto.StockUpdateRequestDTO;
 import com.ecom.order_service.entity.OrderEntity;
 import com.ecom.order_service.enums.OrderStatus;
+import com.ecom.order_service.event.OrderCreatedEvent;
+import com.ecom.order_service.kafka.OrderEventProducer;
 import com.ecom.order_service.mapper.OrderMapper;
 import com.ecom.order_service.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,31 +23,40 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
-    private final InventoryClient inventoryClient;
+    private final OrderEventProducer orderEventProducer;
+
 
     public OrderResponseDTO placeOrder(OrderRequestDTO order){
-        System.out.println("inside orderService placeorder" + order);
-        StockCheckResponseDTO stock = inventoryClient.checkStock(order.getProductId());
+//        StockCheckResponseDTO stock = inventoryClient.checkStock(order.getProductId());
 
-        if(stock.getQuantity() < order.getQuantity())
-            throw new RuntimeException("Out of Stock");
+//        if(stock.getQuantity() < order.getQuantity())
+//            throw new RuntimeException("Out of Stock");
 
-        Boolean reduced = inventoryClient.
-                reduceStock(new StockUpdateRequestDTO(order.getProductId(), order.getQuantity()));
+//        Boolean reduced = inventoryClient.
+//                reduceStock(new StockUpdateRequestDTO(order.getProductId(), order.getQuantity()));
 
-        if(!reduced) throw new RuntimeException("Failed to reduce the stock");
+//        if(!reduced) throw new RuntimeException("Failed to reduce the stock");
 
-        System.out.println("inside 2 orderService place order" + order);
         OrderEntity newOrder = new OrderEntity();
         newOrder.setUserId(order.getUserId());
         newOrder.setProductId(order.getProductId());
         newOrder.setQuantity(order.getQuantity());
         newOrder.setPrice(0.0);
-        newOrder.setOrderStatus(OrderStatus.PLACED);
+        newOrder.setOrderStatus(OrderStatus.PENDING);
         newOrder.setCreatedAt(new Date());
 
-        OrderEntity orderCreated = orderRepository.save(newOrder);
-        return orderMapper.toDto(orderCreated);
+        OrderEntity savedOrder = orderRepository.save(newOrder);
+
+        orderEventProducer.publishOrderCreated(
+                new OrderCreatedEvent(
+                        savedOrder.getOrderId(),
+                        savedOrder.getUserId(),
+                        savedOrder.getProductId(),
+                        savedOrder.getQuantity()
+                )
+        );
+
+        return orderMapper.toDto(savedOrder);
     }
 
     public OrderResponseDTO getOrderDetails(Long orderId){
