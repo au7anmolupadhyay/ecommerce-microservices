@@ -4,9 +4,13 @@ import com.ecom.inventory_service.dto.StockCheckResponseDTO;
 import com.ecom.inventory_service.dto.StockResponseDTO;
 import com.ecom.inventory_service.dto.StockUpdateRequestDTO;
 import com.ecom.inventory_service.entity.InventoryEntity;
+import com.ecom.inventory_service.entity.ProcessedOrderEntity;
 import com.ecom.inventory_service.mapper.InventoryMapper;
 import com.ecom.inventory_service.repository.InventoryRepository;
+import com.ecom.inventory_service.repository.ProcessedOrderRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +19,7 @@ public class InventoryService {
 
     private final InventoryRepository inventoryRepository;
     private final InventoryMapper inventoryMapper;
+    private final ProcessedOrderRepository processedOrderRepository;
 
     public StockResponseDTO addProductQuantity(StockUpdateRequestDTO product){
         InventoryEntity stock = inventoryRepository.findByProductId(product.getProductId())
@@ -26,22 +31,45 @@ public class InventoryService {
         return inventoryMapper.toDto(stock);
     }
 
-    public Boolean reduceProductQuantity(StockUpdateRequestDTO product){
-        InventoryEntity stock = inventoryRepository.findByProductId(product.getProductId())
-                .orElseThrow(()->new RuntimeException("Product not found!"));
+//    public Boolean reduceProductQuantity(StockUpdateRequestDTO product){
+//        InventoryEntity stock = inventoryRepository.findByProductId(product.getProductId())
+//                .orElseThrow(()->new RuntimeException("Product not found!"));
+//
+//        if(stock.getQuantity() < product.getQuantity()){
+//            throw new RuntimeException ("Insufficient Stock");
+//        }
+//
+//        try{
+//            stock.setQuantity(stock.getQuantity() - product.getQuantity());
+//            inventoryRepository.save(stock);
+//            return true;
+//        }catch (Exception e){
+//            throw new RuntimeException("Stock not updated");
+//        }
+//    }
 
-        if(stock.getQuantity() < product.getQuantity()){
-            throw new RuntimeException ("Insufficient Stock");
+    @Transactional
+    public void reduceStockForOrder(Long orderId, Long productId, Integer quantity) {
+
+        // idempotency
+        if(processedOrderRepository.existsById(orderId)){
+            System.out.println("Order already processed : " + orderId);
+            return;
         }
 
-        try{
-            stock.setQuantity(stock.getQuantity() - product.getQuantity());
-            inventoryRepository.save(stock);
-            return true;
-        }catch (Exception e){
-            throw new RuntimeException("Stock not updated");
+        InventoryEntity stock = inventoryRepository.findByProductId(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        if (stock.getQuantity() < quantity) {
+            throw new RuntimeException("Insufficient Stock");
         }
+
+        stock.setQuantity(stock.getQuantity() - quantity);
+        inventoryRepository.save(stock);
+
+        processedOrderRepository.save(new ProcessedOrderEntity(orderId));
     }
+
 
     public StockCheckResponseDTO checkStockQuantity(Long productId){
         InventoryEntity stock = inventoryRepository.findByProductId(productId)

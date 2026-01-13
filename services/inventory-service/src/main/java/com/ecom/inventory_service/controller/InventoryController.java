@@ -20,11 +20,11 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.addProductQuantity(product));
     }
 
-    @PostMapping("/reduce")
-    public ResponseEntity<Boolean> reduceStock(@RequestBody StockUpdateRequestDTO product){
-        System.out.println("In inventory controller " + product);
-        return ResponseEntity.ok(inventoryService.reduceProductQuantity(product));
-    }
+//    @PostMapping("/reduce")
+//    public ResponseEntity<Boolean> reduceStock(@RequestBody StockUpdateRequestDTO product){
+//        System.out.println("In inventory controller " + product);
+//        return ResponseEntity.ok(inventoryService.reduceProductQuantity(product));
+//    }
 
     @GetMapping("/check/{productId}")
     public ResponseEntity<StockCheckResponseDTO> checkStock(@PathVariable Long productId){
